@@ -1,42 +1,59 @@
-#include <pololu/orangutan.h>
+﻿#define __AVR_ATmega168P__
+#define F_CPU 20000000UL
+#include <avr/io.h>
+#include <util/delay.h>
 
-/*
- * Based on example code from and depends on libpololu-avr
- *
- * http://www.pololu.com/docs/0J20
- * http://www.pololu.com
- * http://forum.pololu.com
- */
+#define HIGH 1
+#define LOW 0
 
-#define TOP_L IO_C1
-#define TOP IO_C2
-#define TOP_R IO_C3
-#define MID IO_C0
-#define BOT_L IO_B4
-#define BOT IO_B2
-#define BOT_R IO_B1
-#define DOT IO_B0
+#define TOP_L_OFF() PORTC |= (1<<PORTC1)
+#define TOP_L_ON() PORTC &= ~(1<<PORTC1)
+#define TOP_OFF() PORTC |= (1<<PORTC2)
+#define TOP_ON() PORTC &= ~(1<<PORTC2)
+#define TOP_R_OFF() PORTC |= (1<<PORTC3)
+#define TOP_R_ON() PORTC &= ~(1<<PORTC3)
+#define MID_OFF() PORTC |= (1<<PORTC0)
+#define MID_ON() PORTC &= ~(1<<PORTC0)
+#define BOT_L_OFF() PORTB |= (1<<PORTB4)
+#define BOT_L_ON() PORTB &= ~(1<<PORTB4)
+#define BOT_OFF() PORTB |= (1<<PORTB2)
+#define BOT_ON() PORTB &= ~(1<<PORTB2)
+#define BOT_R_OFF() PORTB |= (1<<PORTB1)
+#define BOT_R_ON() PORTB &= ~(1<<PORTB1)
+#define DOT_OFF() PORTB |= (1<<PORTB0)
+#define DOT_ON() PORTB &= ~(1<<PORTB0)
+
+void set_off();
+void flash(int, int);
+void set_num(int);
+
+void init() {
+  DDRC |= (1<<DDC0) | (1<<DDC1) | (1<<DDC2) | (1<<DDC3);
+  DDRB |= (1<<DDB0) | (1<<DDB1) | (1<<DDB2) | (1<<DDB4);
+  set_off();
+}
 
 void flash(int val, int duration) {
   int length = 0;
 
   while(length < duration) {
     set_num(val);
-    delay_ms(200);
+    _delay_ms(200);
     set_off();
-    delay_ms(200);
+    _delay_ms(200);
     length += 400;
   }
 }
 
 void set_off() {
-  set_digital_output(TOP_L, HIGH);
-  set_digital_output(TOP, HIGH);
-  set_digital_output(TOP_R, HIGH);
-  set_digital_output(MID, HIGH);
-  set_digital_output(BOT_L, HIGH);
-  set_digital_output(BOT, HIGH);
-  set_digital_output(BOT_R, HIGH);
+  TOP_L_OFF();
+  TOP_OFF();
+  TOP_R_OFF();
+  MID_OFF();
+  BOT_L_OFF();
+  BOT_OFF();
+  BOT_R_OFF();
+  DOT_OFF();
 }
 
 void set_num(int val) {
@@ -45,91 +62,92 @@ void set_num(int val) {
   }
 
   if (val == 0) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, HIGH);
-    set_digital_output(BOT_L, LOW);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_ON();
+    TOP_R_ON();
+    MID_OFF();
+    BOT_L_ON();
+    BOT_ON();
+    BOT_R_ON();
   } else if (val == 1) {
-    set_digital_output(TOP_L, HIGH);
-    set_digital_output(TOP, HIGH);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, HIGH);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, HIGH);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_OFF();
+    TOP_OFF();
+    TOP_R_ON();
+    MID_OFF();
+    BOT_L_OFF();
+    BOT_OFF();
+    BOT_R_ON();
   } else if (val == 2) {
-    set_digital_output(TOP_L, HIGH);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, LOW);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, HIGH);
+    TOP_L_OFF();
+    TOP_ON();
+    TOP_R_ON();
+    MID_ON();
+    BOT_L_ON();
+    BOT_ON();
+    BOT_R_OFF();
   } else if (val == 3) {
-    set_digital_output(TOP_L, HIGH);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_OFF();
+    TOP_ON();
+    TOP_R_ON();
+    MID_ON();
+    BOT_L_OFF();
+    BOT_ON();
+    BOT_R_ON();
   } else if (val == 4) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, HIGH);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, HIGH);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_OFF();
+    TOP_R_ON();
+    MID_ON();
+    BOT_L_OFF();
+    BOT_OFF();
+    BOT_R_ON();
   } else if (val == 5) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, HIGH);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_ON();
+    TOP_R_OFF();
+    MID_ON();
+    BOT_L_OFF();
+    BOT_ON();
+    BOT_R_ON();
   } else if (val == 6) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, HIGH);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, LOW);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_ON();
+    TOP_R_OFF();
+    MID_ON();
+    BOT_L_ON();
+    BOT_ON();
+    BOT_R_ON();
   } else if (val == 7) {
-    set_digital_output(TOP_L, HIGH);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, HIGH);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, HIGH);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_OFF();
+    TOP_ON();
+    TOP_R_ON();
+    MID_OFF();
+    BOT_L_OFF();
+    BOT_OFF();
+    BOT_R_ON();
   } else if (val == 8) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, LOW);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_ON();
+    TOP_R_ON();
+    MID_ON();
+    BOT_L_ON();
+    BOT_ON();
+    BOT_R_ON();
   } else if (val == 9) {
-    set_digital_output(TOP_L, LOW);
-    set_digital_output(TOP, LOW);
-    set_digital_output(TOP_R, LOW);
-    set_digital_output(MID, LOW);
-    set_digital_output(BOT_L, HIGH);
-    set_digital_output(BOT, LOW);
-    set_digital_output(BOT_R, LOW);
+    TOP_L_ON();
+    TOP_ON();
+    TOP_R_ON();
+    MID_ON();
+    BOT_L_OFF();
+    BOT_ON();
+    BOT_R_ON();
   }
 }
 
 
 int main()
 {
+  init();
   while(1)
   {
     int i;
@@ -138,4 +156,5 @@ int main()
     }
   }
 }
+
 
