@@ -140,9 +140,6 @@
    #define TXEN            TXEN0
    #define UBRRL            UBRR0L
    #define UBRRH            UBRR0H
-   #define SIG_UART_TRANS      USART_TX_vect
-   #define SIG_UART_RECV      USART_RX_vect
-   #define SIG_UART_DATA      SIG_USART_DATA
 #endif
 // compatibility with megaXX8 processors
 #if	defined(__AVR_ATmega88__)	|| \
@@ -168,34 +165,53 @@
 	#define SIG_UART_RECV		SIG_USART_RECV
 	#define SIG_UART_DATA		SIG_USART_DATA
 #endif
-// compatibility with dual-uart processors
+
+// compatibility with dual-uart processors (untested YMMV)
 // (if you need to use both uarts, please use the uart2 library)
-#if defined(__AVR_ATmega161__)
-	#define UDR					UDR0
-	#define UCR					UCSR0B
-	#define UBRRL				UBRR0
-	#define SIG_UART_TRANS		SIG_UART0_TRANS
-	#define SIG_UART_RECV		SIG_UART0_RECV
-	#define SIG_UART_DATA		SIG_UART0_DATA
+#ifndef USART_RX_vect
+  #ifdef UART_USE_UART1
+    #if defined(UART1_RX_vect)
+      #define USART_RX_vect UART1_RX_vect
+    #elif defined(USART1_RX_vect)
+      #define USART_RX_vect USART1_RX_vect
+    #endif
+  #else
+    #if defined(UART0_RX_vect)
+      #define USART_RX_vect UART0_RX_vect
+    #elif defined(USART0_RX_vect)
+      #define USART_RX_vect USART0_RX_vect
+    #endif
+  #endif
 #endif
-#if defined(__AVR_ATmega128__)
-#ifdef UART_USE_UART1
-	#define UDR					UDR1
-	#define UCR					UCSR1B
-	#define UBRRL				UBRR1L
-	#define UBRRH				UBRR1H
-	#define SIG_UART_TRANS		SIG_UART1_TRANS
-	#define SIG_UART_RECV		SIG_UART1_RECV
-	#define SIG_UART_DATA		SIG_UART1_DATA
-#else
-	#define UDR					UDR0
-	#define UCR					UCSR0B
-	#define UBRRL				UBRR0L
-	#define UBRRH				UBRR0H
-	#define SIG_UART_TRANS		SIG_UART0_TRANS
-	#define SIG_UART_RECV		SIG_UART0_RECV
-	#define SIG_UART_DATA		SIG_UART0_DATA
+
+#ifndef USART_TX_vect
+  #ifdef UART_USE_UART1
+    #if defined(UART1_TX_vect)
+      #define USART_TX_vect UART1_TX_vect
+    #elif defined(USART1_TX_vect)
+      #define USART_TX_vect USART1_TX_vect
+    #endif
+  #else
+    #if defined(UART0_TX_vect)
+      #define USART_TX_vect UART0_TX_vect
+    #elif defined(USART0_TX_vect)
+      #define USART_TX_vect USART0_TX_vect
+    #endif
+  #endif
 #endif
+
+#ifndef UDR
+  #ifdef UART_USE_UART1
+    #define UDR UDR1
+    #define UCR UCSR1B
+    #define UBRRL UBRR1
+    #define UBRRH UBRR1H
+  #else
+    #define UDR UDR0
+    #define UCR UCSR0B
+    #define UBRRL UBRR0
+    #define UBRRH UBRR0H
+  #endif
 #endif
 
 // functions
