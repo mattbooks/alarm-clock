@@ -1,6 +1,6 @@
-update=Saturday, October 22, 2016 'pmt' 08:31:37 pm
+update=Sunday, November 06, 2016 'pmt' 12:34:24 pm
 version=1
-last_client=kicad
+last_client=eeschema
 [pcbnew]
 version=1
 LastNetListRead=
@@ -58,4 +58,5 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=Common Part Library
+LibName30=parts
+LibName31=Common Part Library
