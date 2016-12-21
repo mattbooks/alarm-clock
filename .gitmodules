@@ -1,0 +1,3 @@
+[submodule "src/lib/uart"]
+	path = src/lib/uart
+	url = git@github.com:andygock/avr-uart.git

@@ -2,9 +2,9 @@ DEVICE = atmega328p
 MCU = atmega328p
 AVRDUDE_DEVICE = m328p
 
-CFLAGS=-g -Wall -mcall-prologues -mmcu=$(MCU) $(DEVICE_SPECIFIC_CFLAGS) -Os
+CFLAGS=-g -Wall -mcall-prologues -mmcu=$(MCU) $(DEVICE_SPECIFIC_CFLAGS) -Os -DUART_RX0_BUFFER_SIZE=256 -DUART_TX0_BUFFER_SIZE=256
 CC=avr-gcc
-OBJ2HEX=avr-objcopy 
+OBJ2HEX=avr-objcopy
 LDFLAGS=-Wl,-gc-sections -Wl,-relax
 
 PORT ?= usb
