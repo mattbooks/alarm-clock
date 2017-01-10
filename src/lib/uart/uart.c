@@ -17,6 +17,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "../../config/config.h"
 
 #ifndef TRUE
 #define TRUE 1

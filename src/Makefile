@@ -10,7 +10,7 @@ LDFLAGS=-Wl,-gc-sections -Wl,-relax
 PORT ?= usb
 AVRDUDE=avrdude
 TARGET=alarm-clock
-OBJECT_FILES=alarm-clock.o seven-seg/seven-seg.o
+OBJECT_FILES=alarm-clock.o seven-seg/seven-seg.o lib/buffer/buffer.o lib/buttons/buttons.o lib/ds_rtc/rtc.o lib/ds_rtc/twi.o lib/ds_rtc/twi-lowlevel.o lib/uart/uart.o
 
 all: $(TARGET).hex
 
