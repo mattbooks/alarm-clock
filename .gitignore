@@ -31,3 +31,5 @@ src/**/*.lib
 # Debug files
 *.dSYM/
 *.su
+
+alarm-clock-cache.lib
