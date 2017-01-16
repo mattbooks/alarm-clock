@@ -33,3 +33,4 @@ src/**/*.lib
 *.su
 
 alarm-clock-cache.lib
+alarm-clock-rescue.lib
