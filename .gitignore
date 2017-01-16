@@ -9,7 +9,7 @@
 *.pch
 
 # Libraries
-*.lib
+src/**/*.lib
 *.a
 *.la
 *.lo

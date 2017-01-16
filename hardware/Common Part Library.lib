@@ -1,0 +1,39 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#(c) SnapEDA 2016 (snapeda.com)
+#This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0
+#
+# DS1307
+#
+DEF DS1307 U 0 40 Y Y 1 L N
+F0 "U" 0 0 50 H I L CNN
+F1 "DS1307" 0 0 50 H I L CNN
+F3 "Maxim Integrated" 0 0 50 H I L CNN "MF"
+F4 "Unavailable" 0 0 50 H I L CNN "Availability"
+F5 "1.32 USD" 0 0 50 H I L CNN "Price"
+F6 "DIP-8 Maxim Integrated" 0 0 50 H I L CNN "Package"
+F7 "DS1307" 0 0 50 H I L CNN "MP"
+F8 "Ic Rtc Clk/Calendar I2c 8-Dip" 0 0 50 H I L CNN "Description"
+$FPLIST
+ SO08
+ SO08-TIGHT
+$ENDFPLIST
+DRAW
+P 2 0 0 10 -300 200 400 200 N
+P 2 0 0 10 400 200 400 -300 N
+P 2 0 0 10 400 -300 -300 -300 N
+P 2 0 0 10 -300 -300 -300 200 N
+T 0 -300 230 70 0 0 0 >Name Normal 0 L B
+T 0 -300 -400 70 0 0 0 >Value Normal 0 L B
+X X1 1 -400 100 100 R 40 40 0 0 B 
+X X2 2 -400 0 100 R 40 40 0 0 B 
+X VBATT 3 -400 -100 100 R 40 40 0 0 B 
+X GND 4 -400 -200 100 R 40 40 0 0 B 
+X SDA 5 500 -200 100 L 40 40 0 0 B 
+X SCL 6 500 -100 100 L 40 40 0 0 B 
+X SQW 7 500 0 100 L 40 40 0 0 B 
+X VCC 8 500 100 100 L 40 40 0 0 B 
+ENDDRAW
+ENDDEF
+#
+# End Library
