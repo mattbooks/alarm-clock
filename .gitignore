@@ -32,5 +32,7 @@ src/**/*.lib
 *.dSYM/
 *.su
 
-alarm-clock-cache.lib
-alarm-clock-rescue.lib
+hardware/alarm-clock.bak
+hardware/alarm-clock-cache.lib
+hardware/alarm-clock-rescue.lib
+hardware/*-bak
