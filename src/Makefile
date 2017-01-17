@@ -10,20 +10,19 @@ LDFLAGS=-Wl,-gc-sections -Wl,-relax
 PORT ?= usb
 AVRDUDE=avrdude
 TARGET=alarm-clock
-OBJECT_FILES=alarm-clock.o seven-seg/seven-seg.o lib/buffer/buffer.o lib/buttons/buttons.o lib/ds_rtc/rtc.o lib/ds_rtc/twi.o lib/ds_rtc/twi-lowlevel.o lib/uart/uart.o
+DEPS=$(wildcard *.h) $(wildcard lib/*.h)
+SOURCES=$(wildcard *.c) $(wildcard lib/*.c)
 
 all: $(TARGET).hex
 
 clean:
-	rm -f *.o *.hex *.obj *.hex
+	rm -f *.o *.hex *.obj
 
 %.hex: %.obj
 	$(OBJ2HEX) -R .eeprom -O ihex $< $@
 
-test.o: test.c
-
-%.obj: $(OBJECT_FILES)
-	$(CC) $(CFLAGS) $(OBJECT_FILES) $(LDFLAGS) -o $@
+%.obj: $(SOURCES) $(DEPS)
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 program: $(TARGET).hex
 	$(AVRDUDE) -p $(AVRDUDE_DEVICE) -c usbtiny -P $(PORT) -U flash:w:$(TARGET).hex

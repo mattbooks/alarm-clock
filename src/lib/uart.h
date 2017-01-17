@@ -58,7 +58,7 @@
 #include <avr/io.h>
 #include <inttypes.h>
 
-#include "../buffer/buffer.h"
+#include "buffer.h"
 
 #ifndef outb
 	#define	outb(addr, data)	addr = (data)

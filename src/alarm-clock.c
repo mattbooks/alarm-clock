@@ -1,9 +1,8 @@
 ﻿#include "config/config.h"
-#include "seven-seg/seven-seg.h"
-
-#include "lib/buffer/buffer.h"
-#include "lib/uart/uart.h"
-#include "lib/ds_rtc/rtc.h"
+#include "lib/seven-seg.h"
+#include "lib/buffer.h"
+#include "lib/uart.h"
+#include "lib/rtc.h"
 
 int main()
 {

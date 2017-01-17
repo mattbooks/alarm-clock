@@ -17,7 +17,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "../../config/config.h"
+#include "../config/config.h"
 
 #ifndef TRUE
 #define TRUE 1
@@ -27,7 +27,6 @@
 #define FALSE 0
 #endif
 
-#include "../buffer/buffer.h"
 #include "uart.h"
 
 // UART global variables
