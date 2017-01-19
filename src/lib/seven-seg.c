@@ -1,16 +1,39 @@
+#include "../alarm-clock.h"
 #include "../config/config.h"
+#include "../lib/rtc.h"
 #include "seven-seg.h"
 
-void init_seven_seg() {
-  DDRC |= (1<<DDC0) | (1<<DDC1) | (1<<DDC2) | (1<<DDC3);
-  DDRB |= (1<<DDB0) | (1<<DDB1) | (1<<DDB2) | (1<<DDB4);
+char current_digit = 0;
+
+ISR(TIMER0_OVF_vect) {
+  current_digit = (current_digit + 1) & 3;
   set_off();
+  set_digit(current_digit);
+
+  if (current_digit == 0) {
+    set_num(get_time()->hour / 10);
+  } else if (current_digit == 1) {
+    set_num(get_time()->hour % 10);
+  } else if (current_digit == 2) {
+    set_num(get_time()->min / 10);
+  } else if (current_digit == 3) {
+    set_num(get_time()->min % 10);
+  }
 }
 
-void flash(int val, int duration) {
+void init_seven_seg() {
+  set_off();
+
+  TCCR0B = 1<<CS01;
+  TIFR0  = 1<<TOV0;
+  TIMSK0 = 1<<TOIE0;
+}
+
+void flash(int digit, int val, int duration) {
   int length = 0;
 
   while(length < duration) {
+    set_digit(digit);
     set_num(val);
     _delay_ms(200);
     set_off();
@@ -20,6 +43,10 @@ void flash(int val, int duration) {
 }
 
 void set_off() {
+  DIGIT1_DISABLE();
+  DIGIT2_DISABLE();
+  DIGIT3_DISABLE();
+  DIGIT4_DISABLE();
   TOP_L_OFF();
   TOP_OFF();
   TOP_R_OFF();
@@ -30,7 +57,7 @@ void set_off() {
   DOT_OFF();
 }
 
-void set_num(int val) {
+void set_num(char val) {
   if(val < 0 || val > 9) {
     return;
   }
@@ -115,5 +142,29 @@ void set_num(int val) {
     BOT_L_OFF();
     BOT_ON();
     BOT_R_ON();
+  }
+}
+
+void set_digit(char val) {
+  if (val == 0) {
+    DIGIT2_DISABLE();
+    DIGIT3_DISABLE();
+    DIGIT4_DISABLE();
+    DIGIT1_ENABLE();
+  } else if (val == 1) {
+    DIGIT1_DISABLE();
+    DIGIT3_DISABLE();
+    DIGIT4_DISABLE();
+    DIGIT2_ENABLE();
+  } else if (val == 2) {
+    DIGIT1_DISABLE();
+    DIGIT2_DISABLE();
+    DIGIT4_DISABLE();
+    DIGIT3_ENABLE();
+  } else if (val == 3) {
+    DIGIT1_DISABLE();
+    DIGIT2_DISABLE();
+    DIGIT3_DISABLE();
+    DIGIT4_ENABLE();
   }
 }
