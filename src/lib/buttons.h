@@ -6,4 +6,4 @@ enum button {
 };
 
 void register_button(enum button, void (*handler)(void));
-uint8_t poll_buttons(void);
+void poll_buttons(void);
