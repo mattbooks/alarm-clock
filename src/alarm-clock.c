@@ -22,52 +22,59 @@ void init() {
   SETUP_B_PORTS();
   SETUP_C_PORTS();
   SETUP_D_PORTS();
+  PIND |= (1<<PD0) | (1<<PD1);
 }
 
 void handle_left() {
-  switch (state) {
-    case DISPLAY_OFF:
-      state = DISPLAY_ALARM;
-      break;
-    case ALARM_DISABLED:
-      dim_lights();
-      break;
-    case DISPLAY_ALARM:
-      state = ADJUST_ALARM;
-      break;
-    case DISPLAY_TIME:
-      state = DISPLAY_OFF;
-      break;
-    case ADJUST_ALARM:
-      decrement_alarm();
-      break;
-    case ADJUST_TIME:
-      decrement_time();
-      break;
-  }
+  increment_seconds(time, -60);
+  rtc_set_time(time);
+
+  /* switch (state) { */
+  /*   case DISPLAY_OFF: */
+  /*     state = DISPLAY_ALARM; */
+  /*     break; */
+  /*   case ALARM_DISABLED: */
+  /*     dim_lights(); */
+  /*     break; */
+  /*   case DISPLAY_ALARM: */
+  /*     state = ADJUST_ALARM; */
+  /*     break; */
+  /*   case DISPLAY_TIME: */
+  /*     state = DISPLAY_OFF; */
+  /*     break; */
+  /*   case ADJUST_ALARM: */
+  /*     decrement_alarm(); */
+  /*     break; */
+  /*   case ADJUST_TIME: */
+  /*     decrement_time(); */
+  /*     break; */
+  /* } */
 }
 
 void handle_right() {
-  switch (state) {
-    case DISPLAY_OFF:
-      state = DISPLAY_TIME;
-      break;
-    case ALARM_DISABLED:
-      raise_lights();
-      break;
-    case DISPLAY_ALARM:
-      state = DISPLAY_OFF;
-      break;
-    case DISPLAY_TIME:
-      state = ADJUST_TIME;
-      break;
-    case ADJUST_ALARM:
-      increment_alarm();
-      break;
-    case ADJUST_TIME:
-      increment_time();
-      break;
-  }
+  increment_seconds(time, 60);
+  rtc_set_time(time);
+
+  /* switch (state) { */
+  /*   case DISPLAY_OFF: */
+  /*     state = DISPLAY_TIME; */
+  /*     break; */
+  /*   case ALARM_DISABLED: */
+  /*     raise_lights(); */
+  /*     break; */
+  /*   case DISPLAY_ALARM: */
+  /*     state = DISPLAY_OFF; */
+  /*     break; */
+  /*   case DISPLAY_TIME: */
+  /*     state = ADJUST_TIME; */
+  /*     break; */
+  /*   case ADJUST_ALARM: */
+  /*     increment_alarm(); */
+  /*     break; */
+  /*   case ADJUST_TIME: */
+  /*     increment_time(); */
+  /*     break; */
+  /* } */
 }
 
 int main()
