@@ -6,8 +6,8 @@
 #include "lib/rtc.h"
 #include "lib/buttons.h"
 #include "lib/state.h"
-#include "lib/time-control.h"
 #include "lib/light-control.h"
+#include "lib/time.h"
 
 struct tm* time;
 enum clock_state state;
