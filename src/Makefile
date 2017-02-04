@@ -2,6 +2,7 @@ DEVICE = atmega328p
 MCU = atmega328p
 AVRDUDE_DEVICE = m328p
 
+TEST_CFLAGS=-g -Wall
 CFLAGS=-g -Wall -mcall-prologues -mmcu=$(MCU) $(DEVICE_SPECIFIC_CFLAGS) -Os -DUART_RX0_BUFFER_SIZE=256 -DUART_TX0_BUFFER_SIZE=256
 CC=avr-gcc
 OBJ2HEX=avr-objcopy
@@ -12,6 +13,8 @@ AVRDUDE=avrdude
 TARGET=alarm-clock
 DEPS=$(wildcard *.h) $(wildcard lib/*.h)
 SOURCES=$(wildcard *.c) $(wildcard lib/*.c)
+TEST_SOURCES=$(wildcard tst/*.c) lib/time.c
+TEST_DEPS=$(wildcard tst/*.h) lib/time.h
 
 all: $(TARGET).hex
 
@@ -26,3 +29,6 @@ clean:
 
 program: $(TARGET).hex
 	$(AVRDUDE) -p $(AVRDUDE_DEVICE) -c usbtiny -P $(PORT) -U flash:w:$(TARGET).hex
+
+test: $(TEST_SOURCES) $(TEST_DEPS)
+	gcc $(TEST_CFLAGS) $(LDFLAGS) $^ -o test
