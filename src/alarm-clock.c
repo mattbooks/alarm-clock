@@ -1,4 +1,5 @@
-﻿#include "alarm-clock.h"
+﻿#include <time.h>
+#include "alarm-clock.h"
 #include "config/config.h"
 #include "lib/seven-seg.h"
 #include "lib/buffer.h"
@@ -9,7 +10,7 @@
 #include "lib/light-control.h"
 #include "lib/time.h"
 
-struct tm* time;
+struct tm t;
 enum clock_state state;
 
 const uint32_t INTERVAL_MS = 10;
@@ -26,8 +27,8 @@ void init() {
 }
 
 void handle_left() {
-  increment_seconds(time, -60);
-  rtc_set_time(time);
+  t = *increment_seconds(&t, -60);
+  rtc_set_time(&t);
 
   /* switch (state) { */
   /*   case DISPLAY_OFF: */
@@ -52,8 +53,8 @@ void handle_left() {
 }
 
 void handle_right() {
-  increment_seconds(time, 60);
-  rtc_set_time(time);
+  t = *increment_seconds(&t, 60);
+  rtc_set_time(&t);
 
   /* switch (state) { */
   /*   case DISPLAY_OFF: */
@@ -87,6 +88,9 @@ int main()
 
   init_seven_seg();
 
+  /* t = *fill_in_time(0, 30, 11, 4, 2, 17); */
+  /* rtc_set_time(&t); */
+
   register_button(LEFT, *handle_left);
   register_button(RIGHT, *handle_right);
 
@@ -96,7 +100,7 @@ int main()
     _delay_ms(INTERVAL_MS);
 
     if (counter % TIME_POLL == 0) {
-      time = rtc_get_time();
+      t = *rtc_get_time();
     }
 
     if (counter % BUTTON_POLL == 0) {
@@ -111,6 +115,6 @@ int main()
 }
 
 struct tm* get_time() {
-  return time;
+  return &t;
 }
 

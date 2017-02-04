@@ -1,6 +1,6 @@
 #include "../alarm-clock.h"
 #include "../config/config.h"
-#include "../lib/rtc.h"
+#include <time.h>
 #include "seven-seg.h"
 
 char current_digit = 0;
@@ -11,13 +11,13 @@ ISR(TIMER0_OVF_vect) {
   set_digit(current_digit);
 
   if (current_digit == 0) {
-    set_num(get_time()->hour / 10);
+    set_num(get_time()->tm_hour / 10);
   } else if (current_digit == 1) {
-    set_num(get_time()->hour % 10);
+    set_num(get_time()->tm_hour % 10);
   } else if (current_digit == 2) {
-    set_num(get_time()->min / 10);
+    set_num(get_time()->tm_min / 10);
   } else if (current_digit == 3) {
-    set_num(get_time()->min % 10);
+    set_num(get_time()->tm_min % 10);
   }
 }
 

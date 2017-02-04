@@ -1,30 +1,27 @@
+#include <stdint.h>
 #include "time.h"
 
-void increment_seconds(struct tm* t, int32_t sec) {
-  uint8_t overflow = 0;
+struct tm* fill_in_time(uint8_t sec, uint8_t min, uint8_t hour, uint8_t mday, uint8_t mon, uint16_t year) {
+  struct tm* sparse_t = &(struct tm) {
+    .tm_sec = sec,
+    .tm_min = min,
+    .tm_hour = hour,
+    .tm_mday = mday,
+    .tm_mon = mon - 1,
+    .tm_year = year + 100
+  };
 
-  t->sec += sec;
-  if (t->sec < 60 && t->sec >= 0) {
-    return;
-  }
+  time_t _t = mktime(sparse_t);
 
-  overflow = t->sec / 60;
-  t->sec /= 60;
-  t->min += overflow;
-  if (t->min < 60 && t->min >= 0) {
-    return;
-  }
+  return localtime(&_t);
+}
 
-  overflow = t->min / 60;
-  t->hour += overflow;
-  t->min /= 60;
+struct tm* increment_seconds(struct tm* t, int32_t sec) {
+  time_t _t;
 
-  if (t->hour < 24 && t->hour >= 0) {
-    return;
-  }
+  _t = mktime(t);
 
-  overflow = t->hour / 24;
-  t->mday += overflow;
-  t->hour /= 24;
-  // things get sketchy here... TODO: FIX!
+  _t += sec;
+
+  return localtime(&_t);
 }
