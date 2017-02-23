@@ -1,3 +1,5 @@
+src/tags
+
 # Object files
 *.o
 *.ko
