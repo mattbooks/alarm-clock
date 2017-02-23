@@ -17,6 +17,9 @@
 #define DOT_ON() SEG_DP_GRP |= (1<<SEG_DP_PIN)
 #define DOT_OFF() SEG_DP_GRP &= ~(1<<SEG_DP_PIN)
 
+#define COLON_ON() SEG_COLON_GRP |= (1<<SEG_COLON_PIN)
+#define COLON_OFF() SEG_COLON_GRP &= ~(1<<SEG_COLON_PIN)
+
 #define DIGIT1_ENABLE() SEG_DIG1_GRP &= ~(1<<SEG_DIG1_PIN)
 #define DIGIT1_DISABLE() SEG_DIG1_GRP |= (1<<SEG_DIG1_PIN)
 #define DIGIT2_ENABLE() SEG_DIG2_GRP &= ~(1<<SEG_DIG2_PIN)
@@ -32,3 +35,4 @@ void flash(int, int, int);
 void set_num(char);
 void set_digit(char);
 void set_time(struct tm*);
+void display_time_digit(struct tm*, uint8_t);

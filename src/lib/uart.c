@@ -102,7 +102,7 @@ Date        Description
 			vice USART0_RX_vect for the others in the macro).
 			Verified all existing macro register names against the device
 			header files in AVR-Libc v1.6.6 to catch any inconsistencies.
-05/12/2009  Added support for 48P, 88P, 168P, and 328P by adding them to the
+05/12/2009  Added support for 48P, 88P, 168P, and 328 by adding them to the
 			existing 48/88/168 macro.
 			Added Arduino-style available() and flush() functions for both
 			supported UARTs.  Really wanted to keep them out of the library, so
@@ -290,8 +290,8 @@ Date        Description
 	#define UART0_UDRIE    UDRIE
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
-      defined(__AVR_ATmega328P__) 
-	/* TLS-Added 48P/88P/168P/328P */
+      defined(__AVR_ATmega328__) 
+	/* TLS-Added 48P/88P/168P/328 */
 	/* ATmega with one USART */
 	#define ATMEGA_USART0
 	#define UART0_RECEIVE_INTERRUPT   USART_RX_vect

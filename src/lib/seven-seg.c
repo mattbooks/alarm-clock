@@ -3,21 +3,53 @@
 #include <time.h>
 #include "seven-seg.h"
 
-char current_digit = 0;
+uint8_t current_digit = 0;
+uint8_t colon_flash_state = 0;
+uint32_t colon_flash_timer = 0;
 
 ISR(TIMER0_OVF_vect) {
   current_digit = (current_digit + 1) & 3;
   set_off();
-  set_digit(current_digit);
+
+  switch(get_state()) {
+    case DISPLAY_TIME:
+      COLON_ON();
+      display_time_digit(get_time(), current_digit);
+      break;
+    case ADJUST_TIME:
+      colon_flash_timer += 1;
+      if (colon_flash_timer % 128 == 0) {
+        colon_flash_state = 1 - colon_flash_state;
+      }
+      if (colon_flash_state) {
+        COLON_ON();
+      } else {
+        COLON_OFF();
+      }
+
+      display_time_digit(get_time(), current_digit);
+      break;
+    default:
+      COLON_OFF();
+      break;
+  }
+}
+
+void display_time_digit(struct tm* t, uint8_t digit) {
+  set_digit(digit);
 
   if (current_digit == 0) {
-    set_num(get_time()->tm_hour / 10);
-  } else if (current_digit == 1) {
-    set_num(get_time()->tm_hour % 10);
-  } else if (current_digit == 2) {
-    set_num(get_time()->tm_min / 10);
-  } else if (current_digit == 3) {
-    set_num(get_time()->tm_min % 10);
+    if (t->tm_hour < 10) {
+      set_off();
+    } else {
+      set_num(t->tm_hour / 10);
+    }
+  } else if (digit == 1) {
+    set_num(t->tm_hour % 10);
+  } else if (digit == 2) {
+    set_num(t->tm_min / 10);
+  } else if (digit == 3) {
+    set_num(t->tm_min % 10);
   }
 }
 
