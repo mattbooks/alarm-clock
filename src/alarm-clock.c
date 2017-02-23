@@ -35,6 +35,7 @@ void reset_edit_timer() {
 void handle_left() {
   switch (state) {
     case DISPLAY_OFF:
+      t = *rtc_get_time();
       state = DISPLAY_TIME;
       break;
     case ALARM_DISABLED:
@@ -119,8 +120,10 @@ int main()
   while (1) {
     _delay_ms(INTERVAL_MS);
 
-    if (counter % TIME_POLL == 0) {
-      t = *rtc_get_time();
+    if (state == DISPLAY_TIME || state == ADJUST_TIME) {
+      if (counter % TIME_POLL == 0) {
+        t = *rtc_get_time();
+      }
     }
 
     if (counter % BUTTON_POLL == 0) {
