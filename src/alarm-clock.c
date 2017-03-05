@@ -111,6 +111,7 @@ int main()
   /* rtc_set_time(&t); */
 
   PORTC |= (1<<PORTC2);
+  PORTC |= (1<<PORTC3);
 
   register_button(LEFT, *handle_left);
   register_button(RIGHT, *handle_right);
