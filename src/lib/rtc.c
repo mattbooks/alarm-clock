@@ -282,6 +282,21 @@ void rtc_force_temp_conversion(uint8_t block) {
   } while ((twi_receive() & 0b00100000) != 0);
 }
 
+void rtc_set_alarm(uint16_t min_from_midnight) {
+  uint8_t data[56];
+  data[0] = min_from_midnight >> 8 & 0xff;
+  data[1] = min_from_midnight      & 0xff;
+
+  rtc_set_sram(data);
+}
+
+uint16_t rtc_get_alarm() {
+  uint8_t data[56];
+  rtc_get_sram(data);
+
+  return ((uint16_t) data[1]) << 8 |
+         ((uint16_t) data[0]);
+}
 
 #define DS1307_SRAM_ADDR 0x08
 

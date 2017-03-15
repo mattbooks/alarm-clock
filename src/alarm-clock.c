@@ -1,4 +1,5 @@
 ﻿#include <time.h>
+#include "lib/time.h"
 #include "alarm-clock.h"
 #include "config/config.h"
 #include "lib/seven-seg.h"
@@ -7,9 +8,10 @@
 #include "lib/rtc.h"
 #include "lib/buttons.h"
 #include "lib/light-control.h"
-#include "lib/time.h"
 
 struct tm t;
+struct alarm a = {12,0};
+
 enum clock_state state = DISPLAY_OFF;
 
 const uint32_t INTERVAL_MS = 1;
@@ -23,7 +25,7 @@ void init() {
   SETUP_B_PORTS();
   SETUP_C_PORTS();
   SETUP_D_PORTS();
-  PIND |= (1<<PD0) | (1<<PD1);
+  PIND |= (1<<PD0) | (1<<PD1) | (1<<PD2);
 }
 
 uint32_t edit_timer = 0;
@@ -32,58 +34,70 @@ void reset_edit_timer() {
   edit_timer = 0;
 }
 
+uint8_t is_on() {
+  return (PIND & (1<<PD2)) == 0 ? 1 : 0;
+}
+
 void handle_left() {
-  switch (state) {
-    case DISPLAY_OFF:
-      t = *rtc_get_time();
-      state = DISPLAY_TIME;
-      break;
-    case ALARM_DISABLED:
-      dim_lights();
-      break;
-    case DISPLAY_TIME:
-      reset_edit_timer();
-      state = ADJUST_TIME;
-      break;
-    case DISPLAY_ALARM:
-      state = DISPLAY_OFF;
-      break;
-    case ADJUST_ALARM:
-      reset_edit_timer();
-      /* decrement_alarm(); */
-      break;
-    case ADJUST_TIME:
-      reset_edit_timer();
-      t = *increment_seconds(&t, -60);
-      rtc_set_time(&t);
-      break;
+  if (is_on()) {
+    switch (state) {
+      case DISPLAY_OFF:
+        t = *rtc_get_time();
+        state = DISPLAY_TIME;
+        break;
+      case ALARM_DISABLED:
+        dim_lights();
+        break;
+      case DISPLAY_TIME:
+        reset_edit_timer();
+        state = ADJUST_TIME;
+        break;
+      case DISPLAY_ALARM:
+        state = DISPLAY_OFF;
+        break;
+      case ADJUST_ALARM:
+        reset_edit_timer();
+        /* decrement_alarm(); */
+        break;
+      case ADJUST_TIME:
+        reset_edit_timer();
+        t = *increment_seconds(&t, -60);
+        rtc_set_time(&t);
+        break;
+    }
+  } else {
+    toggle_lights();
   }
 }
 
 void handle_right() {
-  switch (state) {
-    case DISPLAY_OFF:
-      state = DISPLAY_ALARM;
-      break;
-    case ALARM_DISABLED:
-      raise_lights();
-      break;
-    case DISPLAY_TIME:
-      state = DISPLAY_OFF;
-      break;
-    case DISPLAY_ALARM:
-      reset_edit_timer();
-      state = ADJUST_ALARM;
-      break;
-    case ADJUST_ALARM:
-      reset_edit_timer();
-      /* increment_alarm(); */
-      break;
-    case ADJUST_TIME:
-      reset_edit_timer();
-      t = *increment_seconds(&t, 60);
-      rtc_set_time(&t);
-      break;
+  if (is_on()) {
+    switch (state) {
+      case DISPLAY_OFF:
+        state = DISPLAY_ALARM;
+        break;
+      case ALARM_DISABLED:
+        raise_lights();
+        break;
+      case DISPLAY_TIME:
+        state = DISPLAY_OFF;
+        break;
+      case DISPLAY_ALARM:
+        reset_edit_timer();
+        state = ADJUST_ALARM;
+        break;
+      case ADJUST_ALARM:
+        reset_edit_timer();
+        /* increment_alarm(); */
+        break;
+      case ADJUST_TIME:
+        reset_edit_timer();
+        t = *increment_seconds(&t, 60);
+        rtc_set_time(&t);
+        break;
+    }
+  } else {
+    toggle_lights();
   }
 }
 
@@ -106,12 +120,14 @@ int main()
   rtc_run_clock(1);
 
   init_seven_seg();
+  init_lights();
+
+  set_lights(1);
+
+  rtc_set_alarm(alarm_to_min(&a));
 
   /* t = *fill_in_time(0, 55, 20, 21, 2, 17); */
   /* rtc_set_time(&t); */
-
-  PORTC |= (1<<PORTC2);
-  PORTC |= (1<<PORTC3);
 
   register_button(LEFT, *handle_left);
   register_button(RIGHT, *handle_right);
@@ -148,6 +164,10 @@ int main()
 
 struct tm* get_time() {
   return &t;
+}
+
+struct alarm* get_alarm() {
+  return &a;
 }
 
 enum clock_state get_state() {

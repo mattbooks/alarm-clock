@@ -1,6 +1,15 @@
 #include <stdint.h>
 #include "time.h"
 
+void min_to_alarm(uint16_t min, struct alarm* a) {
+  a->min = min % 60;
+  a->hour = min / 60;
+}
+
+uint16_t alarm_to_min(struct alarm* a) {
+  return a->min + a->hour * 60;
+}
+
 struct tm* fill_in_time(uint8_t sec, uint8_t min, uint8_t hour, uint8_t mday, uint8_t mon, uint16_t year) {
   struct tm* sparse_t = &(struct tm) {
     .tm_sec = sec,

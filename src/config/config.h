@@ -34,6 +34,12 @@
 #define SEG_DIG4_GRP PORTD
 #define SEG_DIG4_PIN PORTD3
 
+#define LED_GRP PORTC
+#define LED_PIN PORTC3
+
+#define BUZ_GRP PORTC
+#define BUZ_PIN PORTC2
+
 #define SETUP_B_PORTS() DDRB |= (1<<DDB0) | (1<<DDB1) | (1<<DDB2) | (1<<DDB3) | (1<<DDB4) | (1<<DDB5)
 #define SETUP_C_PORTS() DDRC |= (1<<DDC0) | (1<<DDC1) | (1<<DDC2) | (1<<DDC3)
 #define SETUP_D_PORTS() DDRD |= (1<<DDD3) | (1<<DDD4) | (1<<DDD5) | (1<<DDD6) | (1<<DDD7)

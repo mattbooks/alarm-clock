@@ -7,6 +7,19 @@ uint8_t current_digit = 0;
 uint8_t colon_flash_state = 0;
 uint32_t colon_flash_timer = 0;
 
+void flash_colon() {
+  colon_flash_timer += 1;
+
+  if (colon_flash_timer % 128 == 0) {
+    colon_flash_state = 1 ^ colon_flash_state;
+  }
+  if (colon_flash_state) {
+    COLON_ON();
+  } else {
+    COLON_OFF();
+  }
+}
+
 ISR(TIMER0_OVF_vect) {
   current_digit = (current_digit + 1) & 3;
   set_off();
@@ -17,39 +30,52 @@ ISR(TIMER0_OVF_vect) {
       display_time_digit(get_time(), current_digit);
       break;
     case ADJUST_TIME:
-      colon_flash_timer += 1;
-      if (colon_flash_timer % 128 == 0) {
-        colon_flash_state = 1 - colon_flash_state;
-      }
-      if (colon_flash_state) {
-        COLON_ON();
-      } else {
-        COLON_OFF();
-      }
-
+      flash_colon();
       display_time_digit(get_time(), current_digit);
       break;
+    case DISPLAY_ALARM:
+      COLON_ON();
+      display_alarm_digit(get_alarm(), current_digit);
+    case ADJUST_ALARM:
+      flash_colon();
+      display_alarm_digit(get_alarm(), current_digit);
     default:
       COLON_OFF();
       break;
   }
 }
 
+void display_alarm_digit(struct alarm* a, uint8_t digit) {
+  if (digit == 0) {
+    display_digit(digit, a->hour / 10);
+  } else if (digit == 1) {
+    display_digit(digit, a->hour % 10);
+  } else if (digit == 2) {
+    display_digit(digit, a->min / 10);
+  } else if (digit == 3) {
+    display_digit(digit, a->min % 10);
+  }
+}
+
 void display_time_digit(struct tm* t, uint8_t digit) {
+  if (digit == 0) {
+    display_digit(digit, t->tm_hour / 10);
+  } else if (digit == 1) {
+    display_digit(digit, t->tm_hour % 10);
+  } else if (digit == 2) {
+    display_digit(digit, t->tm_min / 10);
+  } else if (digit == 3) {
+    display_digit(digit, t->tm_min % 10);
+  }
+}
+
+void display_digit(uint8_t digit, uint8_t val) {
   set_digit(digit);
 
-  if (current_digit == 0) {
-    if (t->tm_hour < 10) {
+  if (digit == 0 && val == 0) {
       set_off();
-    } else {
-      set_num(t->tm_hour / 10);
-    }
-  } else if (digit == 1) {
-    set_num(t->tm_hour % 10);
-  } else if (digit == 2) {
-    set_num(t->tm_min / 10);
-  } else if (digit == 3) {
-    set_num(t->tm_min % 10);
+  } else {
+    set_num(val % 10);
   }
 }
 

@@ -1,4 +1,5 @@
-#include "../lib/rtc.h"
+#include "time.h"
+#include "rtc.h"
 
 #define TOP_L_ON() SEG_F_GRP |= (1<<SEG_F_PIN)
 #define TOP_L_OFF() SEG_F_GRP &= ~(1<<SEG_F_PIN)
@@ -35,4 +36,6 @@ void flash(int, int, int);
 void set_num(char);
 void set_digit(char);
 void set_time(struct tm*);
+void display_digit(uint8_t, uint8_t);
+void display_alarm_digit(struct alarm*, uint8_t);
 void display_time_digit(struct tm*, uint8_t);

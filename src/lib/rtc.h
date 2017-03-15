@@ -49,6 +49,9 @@ bool rtc_is_clock_running(void);
 void  ds3231_get_temp_int(int8_t* i, uint8_t* f);
 void rtc_force_temp_conversion(uint8_t block);
 
+void rtc_set_alarm(uint16_t);
+uint16_t rtc_get_alarm(void);
+
 // SRAM read/write DS1307 only
 void rtc_get_sram(uint8_t* data);
 void rtc_set_sram(uint8_t *data);
