@@ -1,4 +1,4 @@
-update=Fri 20 Jan 2017 04:49:29 PM PST
+update=Sun 16 Apr 2017 11:58:05 AM PDT
 version=1
 last_client=kicad
 [pcbnew]
@@ -60,4 +60,5 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=parts
-LibName32=Common Part Library
+LibName32=CPL
+LibName33=/home/matt/projects/kicad_libraries/rtc
