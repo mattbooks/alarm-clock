@@ -10,6 +10,35 @@ uint16_t alarm_to_min(struct alarm* a) {
   return a->min + a->hour * 60;
 }
 
+struct alarm* decrement_alarm(struct alarm* a) {
+  uint16_t mins = alarm_to_min(a);
+
+  mins = (mins - 5) % (24 * 60);
+
+  min_to_alarm(mins, a);
+
+  return a;
+}
+
+struct alarm* increment_alarm(struct alarm* a) {
+  uint16_t mins = alarm_to_min(a);
+
+  mins = (mins + 5) % (24 * 60);
+
+  min_to_alarm(mins, a);
+
+  return a;
+}
+
+int8_t cmp_alarm(struct tm* t, struct alarm* a) {
+  if (t->tm_hour > a->hour) return 1;
+  if (t->tm_hour < a->hour) return -1;
+  if (t->tm_min > a->min) return 1;
+  if (t->tm_min < a->min) return -1;
+  if (t->tm_sec > 0) return 1;
+  return 0;
+}
+
 struct tm* fill_in_time(uint8_t sec, uint8_t min, uint8_t hour, uint8_t mday, uint8_t mon, uint16_t year) {
   struct tm* sparse_t = &(struct tm) {
     .tm_sec = sec,

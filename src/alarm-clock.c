@@ -8,11 +8,13 @@
 #include "lib/rtc.h"
 #include "lib/buttons.h"
 #include "lib/light-control.h"
+#include "lib/buzzer.h"
 
 struct tm t;
 struct alarm a = {12,0};
 
 enum clock_state state = DISPLAY_OFF;
+enum alarm_state alarm_state = OFF;
 
 const uint32_t INTERVAL_MS = 1;
 const uint32_t RESET_VAL = 1000000;
@@ -39,6 +41,12 @@ uint8_t is_on() {
 }
 
 void handle_left() {
+  if (alarm_state == ON) {
+    alarm_state = OFF;
+    buzz(0);
+    return;
+  }
+
   if (is_on()) {
     switch (state) {
       case DISPLAY_OFF:
@@ -57,7 +65,7 @@ void handle_left() {
         break;
       case ADJUST_ALARM:
         reset_edit_timer();
-        /* decrement_alarm(); */
+        decrement_alarm(&a);
         break;
       case ADJUST_TIME:
         reset_edit_timer();
@@ -71,6 +79,12 @@ void handle_left() {
 }
 
 void handle_right() {
+  if (alarm_state == ON) {
+    alarm_state = OFF;
+    buzz(0);
+    return;
+  }
+
   if (is_on()) {
     switch (state) {
       case DISPLAY_OFF:
@@ -88,7 +102,7 @@ void handle_right() {
         break;
       case ADJUST_ALARM:
         reset_edit_timer();
-        /* increment_alarm(); */
+        increment_alarm(&a);
         break;
       case ADJUST_TIME:
         reset_edit_timer();
@@ -124,9 +138,9 @@ int main()
 
   set_lights(1);
 
-  rtc_set_alarm(alarm_to_min(&a));
+  min_to_alarm(rtc_get_alarm(), &a);
 
-  /* t = *fill_in_time(0, 55, 20, 21, 2, 17); */
+  /* t = *fill_in_time(0, 9, 15, 11, 6, 17); */
   /* rtc_set_time(&t); */
 
   register_button(LEFT, *handle_left);
@@ -134,12 +148,20 @@ int main()
 
   uint32_t counter = 0;
 
+  struct tm prev_time = *rtc_get_time();
+  t = *rtc_get_time();
+
   while (1) {
     _delay_ms(INTERVAL_MS);
 
-    if (state == DISPLAY_TIME || state == ADJUST_TIME) {
-      if (counter % TIME_POLL == 0) {
-        t = *rtc_get_time();
+    if (counter % TIME_POLL == 0) {
+      prev_time = t;
+      t = *rtc_get_time();
+
+      if (is_on() && cmp_alarm(&prev_time, &a) < 0 && cmp_alarm(&t, &a) >= 0) {
+        alarm_state = ON;
+        set_lights(1);
+        buzz(1);
       }
     }
 
@@ -152,6 +174,7 @@ int main()
 
       if (edit_timer > EDIT_TIMEOUT) {
         state = DISPLAY_OFF;
+        rtc_set_alarm(alarm_to_min(&a));
       }
     }
 
@@ -159,6 +182,7 @@ int main()
     if (counter >= RESET_VAL) {
       counter = 0;
     }
+
   }
 }
 

@@ -59,6 +59,21 @@ static void test_fill_in_time() {
   check_time(0, 0, 2017, 0, 1, 0, 0, 0);
 }
 
+static void test_cmp_alarm() {
+  struct alarm a = {2, 0};
+  struct tm t1 = *fill_in_time(59, 59, 1, 1, 1, 17);
+  struct tm t2 = *fill_in_time(0, 0, 2, 1, 1, 17);
+  struct tm t3 = *fill_in_time(0, 1, 2, 1, 1, 17);
+  struct tm t4 = *fill_in_time(1, 0, 2, 1, 1, 17);
+  struct tm t5 = *fill_in_time(0, 0, 3, 1, 1, 17);
+
+  sput_fail_unless(cmp_alarm(&t1, &a) < 0, "before");
+  sput_fail_unless(cmp_alarm(&t2, &a) == 0, "equal" );
+  sput_fail_unless(cmp_alarm(&t3, &a) == 1, "past" );
+  sput_fail_unless(cmp_alarm(&t4, &a) == 1, "past" );
+  sput_fail_unless(cmp_alarm(&t5, &a) == 1, "past" );
+}
+
 int main(int argc, char *argv[]) {
   sput_start_testing();
 
@@ -67,6 +82,9 @@ int main(int argc, char *argv[]) {
 
   sput_enter_suite("test_fill_in_time()");
   sput_run_test(test_fill_in_time);
+
+  sput_enter_suite("test_cmp_alarm()");
+  sput_run_test(test_cmp_alarm);
 
   sput_finish_testing();
 

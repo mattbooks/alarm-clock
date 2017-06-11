@@ -294,8 +294,8 @@ uint16_t rtc_get_alarm() {
   uint8_t data[56];
   rtc_get_sram(data);
 
-  return ((uint16_t) data[1]) << 8 |
-         ((uint16_t) data[0]);
+  return ((uint16_t) data[0]) << 8 |
+         ((uint16_t) data[1]);
 }
 
 #define DS1307_SRAM_ADDR 0x08

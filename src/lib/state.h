@@ -6,3 +6,8 @@ enum clock_state {
   ADJUST_ALARM,
   ADJUST_TIME
 };
+
+enum alarm_state {
+  OFF,
+  ON
+};
