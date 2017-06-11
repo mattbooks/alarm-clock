@@ -65,7 +65,7 @@ void handle_left() {
         break;
       case ADJUST_ALARM:
         reset_edit_timer();
-        decrement_alarm(&a);
+        increment_alarm(&a, -5);
         break;
       case ADJUST_TIME:
         reset_edit_timer();
@@ -102,7 +102,7 @@ void handle_right() {
         break;
       case ADJUST_ALARM:
         reset_edit_timer();
-        increment_alarm(&a);
+        increment_alarm(&a, 5);
         break;
       case ADJUST_TIME:
         reset_edit_timer();
@@ -158,10 +158,15 @@ int main()
       prev_time = t;
       t = *rtc_get_time();
 
-      if (is_on() && cmp_alarm(&prev_time, &a) < 0 && cmp_alarm(&t, &a) >= 0) {
-        alarm_state = ON;
-        set_lights(1);
-        buzz(1);
+      if (is_on()) {
+        if (cmp_pre_alarm(&prev_time, &a) < 0 && cmp_pre_alarm(&t, &a) >= 0) {
+          alarm_state = WARM;
+          set_lights(1);
+        }
+        if (cmp_alarm(&prev_time, &a) < 0 && cmp_alarm(&t, &a) >= 0) {
+          alarm_state = ON;
+          buzz(1);
+        }
       }
     }
 

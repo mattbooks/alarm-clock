@@ -20,14 +20,22 @@ struct alarm* decrement_alarm(struct alarm* a) {
   return a;
 }
 
-struct alarm* increment_alarm(struct alarm* a) {
+struct alarm* increment_alarm(struct alarm* a, int16_t adj) {
   uint16_t mins = alarm_to_min(a);
 
-  mins = (mins + 5) % (24 * 60);
+  mins = (mins + adj) % (24 * 60);
 
   min_to_alarm(mins, a);
 
   return a;
+}
+
+int8_t cmp_pre_alarm(struct tm* t, struct alarm* a) {
+  struct alarm pre = {a->hour, a->min};
+
+  increment_alarm(&pre, -30);
+
+  return cmp_alarm(t, &pre);
 }
 
 int8_t cmp_alarm(struct tm* t, struct alarm* a) {

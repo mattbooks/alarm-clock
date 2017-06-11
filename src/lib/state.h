@@ -9,5 +9,6 @@ enum clock_state {
 
 enum alarm_state {
   OFF,
+  WARM,
   ON
 };
