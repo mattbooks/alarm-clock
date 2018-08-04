@@ -36,9 +36,11 @@ ISR(TIMER0_OVF_vect) {
     case DISPLAY_ALARM:
       COLON_ON();
       display_alarm_digit(get_alarm(), current_digit);
+      break;
     case ADJUST_ALARM:
       flash_colon();
       display_alarm_digit(get_alarm(), current_digit);
+      break;
     default:
       COLON_OFF();
       break;
@@ -73,7 +75,7 @@ void display_digit(uint8_t digit, uint8_t val) {
   set_digit(digit);
 
   if (digit == 0 && val == 0) {
-      set_off();
+    set_off();
   } else {
     set_num(val % 10);
   }
@@ -85,19 +87,6 @@ void init_seven_seg() {
   TCCR0B = 1<<CS01;
   TIFR0  = 1<<TOV0;
   TIMSK0 = 1<<TOIE0;
-}
-
-void flash(int digit, int val, int duration) {
-  int length = 0;
-
-  while(length < duration) {
-    set_digit(digit);
-    set_num(val);
-    _delay_ms(200);
-    set_off();
-    _delay_ms(200);
-    length += 400;
-  }
 }
 
 void set_off() {
