@@ -4,7 +4,8 @@ enum clock_state {
   DISPLAY_ALARM,
   DISPLAY_TIME,
   ADJUST_ALARM,
-  ADJUST_TIME
+  ADJUST_TIME_HOUR,
+  ADJUST_TIME_MINUTE,
 };
 
 enum alarm_state {

@@ -58,7 +58,7 @@ void handle_left() {
         break;
       case DISPLAY_TIME:
         reset_edit_timer();
-        state = ADJUST_TIME;
+        state = ADJUST_TIME_HOUR;
         break;
       case DISPLAY_ALARM:
         state = DISPLAY_OFF;
@@ -67,7 +67,11 @@ void handle_left() {
         reset_edit_timer();
         increment_alarm(&a, -5);
         break;
-      case ADJUST_TIME:
+      case ADJUST_TIME_HOUR:
+        reset_edit_timer();
+        t = *increment_seconds(&t, -3600);
+        break;
+      case ADJUST_TIME_MINUTE:
         reset_edit_timer();
         t = *increment_seconds(&t, -60);
         break;
@@ -103,7 +107,11 @@ void handle_right() {
         reset_edit_timer();
         increment_alarm(&a, 5);
         break;
-      case ADJUST_TIME:
+      case ADJUST_TIME_HOUR:
+        reset_edit_timer();
+        t = *increment_seconds(&t, 3600);
+        break;
+      case ADJUST_TIME_MINUTE:
         reset_edit_timer();
         t = *increment_seconds(&t, 60);
         break;
@@ -115,7 +123,8 @@ void handle_right() {
 
 uint8_t edit_active() {
   switch (state) {
-    case ADJUST_TIME:
+    case ADJUST_TIME_HOUR:
+    case ADJUST_TIME_MINUTE:
     case ADJUST_ALARM:
       return 1;
     default:
@@ -160,9 +169,14 @@ int main()
       edit_timer += 1;
 
       if (edit_timer > EDIT_TIMEOUT) {
-        state = DISPLAY_OFF;
-        rtc_set_alarm(alarm_to_min(&a));
-        rtc_set_time(&t);
+        if (state == ADJUST_TIME_HOUR) {
+          state = ADJUST_TIME_MINUTE;
+          reset_edit_timer();
+        } else {
+          state = DISPLAY_OFF;
+          rtc_set_alarm(alarm_to_min(&a));
+          rtc_set_time(&t);
+        }
       }
     } else {
       if (counter % TIME_POLL == 0) {

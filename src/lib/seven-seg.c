@@ -3,34 +3,67 @@
 #include <time.h>
 #include "seven-seg.h"
 
+uint8_t flash_timer = 0;
+uint8_t flash_threshold = 0x3F;
+
 uint8_t current_digit = 0;
-uint8_t colon_flash_state = 0;
-uint32_t colon_flash_timer = 0;
+
+uint8_t colon_flash_state = 1;
+uint8_t flash_lhs_state = 1;
+uint8_t flash_rhs_state = 1;
+
+void flash_off() {
+  colon_flash_state = 1;
+  flash_lhs_state = 1;
+  flash_rhs_state = 1;
+}
 
 void flash_colon() {
-  colon_flash_timer += 1;
-
-  if (colon_flash_timer % 128 == 0) {
-    colon_flash_state = 1 ^ colon_flash_state;
-  }
-  if (colon_flash_state) {
+  if (flash_timer > flash_threshold) {
     COLON_ON();
   } else {
     COLON_OFF();
   }
 }
 
+void flash_lhs() {
+  flash_rhs_state = 1;
+  if (flash_timer > flash_threshold) {
+    flash_lhs_state = 1;
+  } else {
+    flash_lhs_state = 0;
+  }
+}
+
+void flash_rhs() {
+  flash_lhs_state = 1;
+  if (flash_timer > flash_threshold) {
+    flash_rhs_state = 1;
+  } else {
+    flash_rhs_state = 0;
+  }
+}
+
 ISR(TIMER0_OVF_vect) {
   current_digit = (current_digit + 1) & 3;
+  flash_timer = flash_timer + 1;
+
   set_off();
 
   switch(get_state()) {
     case DISPLAY_TIME:
       COLON_ON();
+      flash_off();
       display_time_digit(get_time(), current_digit);
       break;
-    case ADJUST_TIME:
+    case ADJUST_TIME_HOUR:
       flash_colon();
+      flash_lhs();
+      display_time_digit(get_time(), current_digit);
+      break;
+    case ADJUST_TIME_MINUTE:
+      flash_colon();
+      flash_rhs();
       display_time_digit(get_time(), current_digit);
       break;
     case DISPLAY_ALARM:
@@ -60,13 +93,13 @@ void display_alarm_digit(struct alarm* a, uint8_t digit) {
 }
 
 void display_time_digit(struct tm* t, uint8_t digit) {
-  if (digit == 0) {
+  if (digit == 0 && flash_lhs_state) {
     display_digit(digit, t->tm_hour / 10);
-  } else if (digit == 1) {
+  } else if (digit == 1 && flash_lhs_state) {
     display_digit(digit, t->tm_hour % 10);
-  } else if (digit == 2) {
+  } else if (digit == 2 && flash_rhs_state) {
     display_digit(digit, t->tm_min / 10);
-  } else if (digit == 3) {
+  } else if (digit == 3 && flash_rhs_state) {
     display_digit(digit, t->tm_min % 10);
   }
 }
