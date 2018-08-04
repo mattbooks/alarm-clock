@@ -70,7 +70,6 @@ void handle_left() {
       case ADJUST_TIME:
         reset_edit_timer();
         t = *increment_seconds(&t, -60);
-        rtc_set_time(&t);
         break;
     }
   } else {
@@ -107,7 +106,6 @@ void handle_right() {
       case ADJUST_TIME:
         reset_edit_timer();
         t = *increment_seconds(&t, 60);
-        rtc_set_time(&t);
         break;
     }
   } else {
@@ -154,22 +152,6 @@ int main()
   while (1) {
     _delay_ms(INTERVAL_MS);
 
-    if (counter % TIME_POLL == 0) {
-      prev_time = t;
-      t = *rtc_get_time();
-
-      if (is_on()) {
-        if (cmp_pre_alarm(&prev_time, &a) < 0 && cmp_pre_alarm(&t, &a) >= 0) {
-          alarm_state = WARM;
-          set_lights(1);
-        }
-        if (cmp_alarm(&prev_time, &a) < 0 && cmp_alarm(&t, &a) >= 0) {
-          alarm_state = ON;
-          buzz(1);
-        }
-      }
-    }
-
     if (counter % BUTTON_POLL == 0) {
       poll_buttons();
     }
@@ -180,6 +162,23 @@ int main()
       if (edit_timer > EDIT_TIMEOUT) {
         state = DISPLAY_OFF;
         rtc_set_alarm(alarm_to_min(&a));
+        rtc_set_time(&t);
+      }
+    } else {
+      if (counter % TIME_POLL == 0) {
+        prev_time = t;
+        t = *rtc_get_time();
+
+        if (is_on()) {
+          if (cmp_pre_alarm(&prev_time, &a) < 0 && cmp_pre_alarm(&t, &a) >= 0) {
+            alarm_state = WARM;
+            set_lights(1);
+          }
+          if (cmp_alarm(&prev_time, &a) < 0 && cmp_alarm(&t, &a) >= 0) {
+            alarm_state = ON;
+            buzz(1);
+          }
+        }
       }
     }
 
