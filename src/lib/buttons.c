@@ -6,8 +6,8 @@ struct button_state {
 };
 
 const uint32_t UNHOLD_THRESH = 2;
-const uint32_t REPEAT_MOD = 30;
-const uint32_t REPEAT_THRESH = 200;
+const uint32_t REPEAT_MOD = 8;
+const uint32_t REPEAT_THRESH = 50;
 
 struct button_state left_state = {0};
 struct button_state right_state = {0};
@@ -72,7 +72,7 @@ void untick(enum button b) {
 
 void poll_button(enum button b, void(*handler)(void)) {
   if (get_button(b)) {
-    if (get_ticks(b) == 0 || (get_ticks(b) > REPEAT_THRESH && get_ticks(b) % REPEAT_MOD == 0)) {
+    if (get_ticks(b) == 0 || (get_ticks(b) > REPEAT_THRESH && (get_ticks(b) % REPEAT_MOD) == 0)) {
       handler();
     }
     tick(b);
