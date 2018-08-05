@@ -173,9 +173,13 @@ int main()
           state = ADJUST_TIME_MINUTE;
           reset_edit_timer();
         } else {
-          state = DISPLAY_OFF;
-          rtc_set_alarm(alarm_to_min(&a));
-          rtc_set_time(&t);
+          if (state == ADJUST_ALARM) {
+            state = DISPLAY_OFF;
+            rtc_set_alarm(alarm_to_min(&a));
+          } else if (state == ADJUST_TIME_MINUTE) {
+            state = DISPLAY_TIME;
+            rtc_set_time(&t);
+          }
         }
       }
     } else {
